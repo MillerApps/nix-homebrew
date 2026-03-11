@@ -3,12 +3,15 @@
 
   inputs = {
     brew-src = {
-      url = "github:Homebrew/brew/5.0.12";
+      url = "github:Homebrew/brew/5.1.0";
       flake = false;
     };
   };
 
-  outputs = { self, brew-src }: let
+  outputs = {
+    self,
+    brew-src,
+  }: let
     flakeLock = builtins.fromJSON (builtins.readFile ./flake.lock);
     brewVersion = flakeLock.nodes.brew-src.original.ref;
 
@@ -17,14 +20,15 @@
     };
   in {
     darwinModules = rec {
-      nix-homebrew = { lib, ... }: {
+      nix-homebrew = {lib, ...}: {
         imports = [
           ./modules
         ];
-        nix-homebrew.package = lib.mkOptionDefault (brew-src // {
-          name = "brew-${brewVersion}";
-          version = brewVersion;
-        });
+        nix-homebrew.package = lib.mkOptionDefault (brew-src
+          // {
+            name = "brew-${brewVersion}";
+            version = brewVersion;
+          });
       };
 
       default = nix-homebrew;
