@@ -8,10 +8,7 @@
     };
   };
 
-  outputs = {
-    self,
-    brew-src,
-  }: let
+  outputs = { self,brew-src }: let
     flakeLock = builtins.fromJSON (builtins.readFile ./flake.lock);
     brewVersion = flakeLock.nodes.brew-src.original.ref;
 
@@ -20,12 +17,11 @@
     };
   in {
     darwinModules = rec {
-      nix-homebrew = {lib, ...}: {
+      nix-homebrew = { lib, ... }: {
         imports = [
           ./modules
         ];
-        nix-homebrew.package = lib.mkOptionDefault (brew-src
-          // {
+        nix-homebrew.package = lib.mkOptionDefault (brew-src // {
             name = "brew-${brewVersion}";
             version = brewVersion;
           });
